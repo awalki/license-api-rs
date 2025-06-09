@@ -1,0 +1,10 @@
+[package]
+name = "license-api"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+reqwest = {version = "0.12.19", features = ["json"]}
+async-trait = "0.1.88"
+serde = { version = "1.0.219", features = ["derive"] }
+machineid-rs = "1.2.4"
