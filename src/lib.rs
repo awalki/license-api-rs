@@ -1,6 +1,7 @@
 use reqwest::StatusCode;
 use std::collections::HashMap;
 use std::error::Error;
+use log::{debug, info};
 use models::{ErrorResponse, LoginRequest, LoginResponse, MeResponse};
 use traits::Authenticator;
 
@@ -29,6 +30,7 @@ impl Authenticator for BasicAuthenticator {
     async fn login(
         &self,
         creds: &LoginRequest,
+        hwid: &str,
     ) -> Result<LoginResponse, Box<dyn Error + Send + Sync>> {
         let url = format!("{}/auth/login", self.base_url.trim_end_matches('/'));
 
@@ -37,6 +39,26 @@ impl Authenticator for BasicAuthenticator {
         match resp.status() {
             StatusCode::OK | StatusCode::CREATED => {
                 let lr = resp.json::<LoginResponse>().await?;
+
+                let me = &self.me(&lr.access_token).await?;
+
+                match me.hwid.as_str() {
+                    NOT_LINKED => {
+                        let _ = &self
+                            .link_hwid(&hwid, &lr.access_token)
+                            .await?;
+                        debug!("hwid successfully linked {}", me.username);
+                    }
+                    h if h == hwid => {
+                        debug!("welcome back, {}!", me.username);
+                    }
+                    _ => {
+                        debug!("hwid mismatch! access denied.");
+                    }
+                }
+
+                debug!("login successful");
+
                 Ok(lr)
             }
             StatusCode::UNAUTHORIZED | StatusCode::BAD_REQUEST => {
@@ -60,6 +82,8 @@ impl Authenticator for BasicAuthenticator {
         match resp.status() {
             StatusCode::OK => {
                 let mr = resp.json::<MeResponse>().await?;
+                debug!("getting user info...");
+
                 Ok(mr)
             }
             StatusCode::UNAUTHORIZED | StatusCode::BAD_REQUEST => {
@@ -89,7 +113,11 @@ impl Authenticator for BasicAuthenticator {
             .await?;
 
         match resp.status() {
-            StatusCode::OK => Ok("hwid successfully linked".to_string().into()),
+            StatusCode::OK => {
+                debug!("hwid successfully linked");
+
+                Ok(resp.text().await?)
+            },
             StatusCode::UNAUTHORIZED | StatusCode::BAD_REQUEST => {
                 let err = resp.json::<ErrorResponse>().await?;
                 Err(format!("link failed: {}", err.detail).into())

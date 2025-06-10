@@ -11,3 +11,4 @@ reqwest = {version = "0.12.19", features = ["json"]}
 async-trait = "0.1.88"
 serde = { version = "1.0.219", features = ["derive"] }
 machineid-rs = "1.2.4"
+log = "0.4.27"
