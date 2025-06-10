@@ -30,7 +30,7 @@ impl Authenticator for BasicAuthenticator {
         &self,
         creds: &LoginRequest,
     ) -> Result<LoginResponse, Box<dyn Error + Send + Sync>> {
-        let url = format!("{}/license-api-connector/login", self.base_url.trim_end_matches('/'));
+        let url = format!("{}/auth/login", self.base_url.trim_end_matches('/'));
 
         let resp = self.client.post(&url).form(&creds).send().await?;
 
