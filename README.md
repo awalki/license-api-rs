@@ -12,10 +12,10 @@ cargo add license-api
 
 ```rust
 use inquire::{Password, Text};
-use license_api::hwid::get_hwid;
-use license_api::models::LoginRequest;
-use license_api::traits::Authenticator;
-use license_api::{BasicAuthenticator};
+use license_api::auth::hwid::get_hwid;
+use license_api::auth::models::LoginRequest;
+use license_api::auth::traits::Authenticator;
+use license_api::auth::authenticator::BasicAuthenticator;
 
 #[tokio::main]
 async fn main() {
