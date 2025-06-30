@@ -1,6 +1,6 @@
 [package]
 name = "license-api"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2024"
 license = "MIT"
 description = "License API connector written in Rust"
