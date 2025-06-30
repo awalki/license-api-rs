@@ -747,7 +747,7 @@ checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
 
 [[package]]
 name = "license-api"
-version = "0.2.5"
+version = "0.2.6"
 dependencies = [
  "async-trait",
  "log",

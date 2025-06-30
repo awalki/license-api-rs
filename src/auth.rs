@@ -26,10 +26,7 @@ impl LicenseAPI {
         let login_resp = self
             .client
             .post(&format!("{}/auth/login", self.url.trim_end_matches('/')))
-            .json(&serde_json::json!({
-                "username": creds.username,
-                "password": creds.password,
-            }))
+            .form(creds)
             .send()
             .await?
             .error_for_status()?;
