@@ -11,6 +11,7 @@ pub struct MeResponse {
     pub telegram_id: String,
     pub username: String,
     pub is_banned: bool,
+    pub is_admin: bool,
     pub hwid: String,
 }
 
