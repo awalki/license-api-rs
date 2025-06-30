@@ -44,8 +44,7 @@ impl LicenseAPI {
             .bearer_auth(&access_token)
             .json(&serde_json::json!({ "value": creds.hwid }))
             .send()
-            .await?
-            .error_for_status()?;
+            .await;
 
         Ok(true)
     }
