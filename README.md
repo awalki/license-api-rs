@@ -12,35 +12,36 @@ cargo add license-api
 
 ```rust
 use inquire::{Password, Text};
-use license_api::auth::hwid::get_hwid;
-use license_api::auth::models::LoginRequest;
-use license_api::auth::traits::Authenticator;
-use license_api::auth::authenticator::BasicAuthenticator;
+use license_api::auth::LoginRequest;
+use license_api::hwid::get_hwid;
+use license_api::auth::LicenseAPI;
 
 #[tokio::main]
-async fn main() {
-    let authenticator = BasicAuthenticator::new("http://localhost:8080");
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let api = LicenseAPI::new("http://localhost:8080");
 
     let hwid = get_hwid().await;
 
-    let username = Text::new("enter your username").prompt();
-
-    let password = Password::new("enter your password")
+    let username = Text::new("Enter your username:")
+        .prompt()
+        .expect("Failed to read username");
+    let password = Password::new("Enter your password:")
         .without_confirmation()
-        .prompt();
+        .prompt()
+        .expect("Failed to read password");
 
     let creds = LoginRequest {
-        username: username.unwrap(),
-        password: password.unwrap(),
+        username,
+        password,
+        hwid,
     };
 
-    match authenticator.login(&creds, &hwid).await {
-        Ok(_) => {
-            println!("successfully logged in!");
-        },
-        Err(_) => {
-            eprintln!("failed to login");
-        }
-    };
+    match api.login(&creds).await {
+        Ok(true) => println!("✔ Successfully logged in and HWID linked!"),
+        Ok(false) => eprintln!("⚠ Login succeeded but HWID linking returned failure status."),
+        Err(err) => eprintln!("❌ Login failed: {}", err),
+    }
+
+    Ok(())
 }
 ```
