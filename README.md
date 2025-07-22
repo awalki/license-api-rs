@@ -37,7 +37,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     match api.login(&creds).await {
-        Ok(true) => println!("✔ Successfully logged in and HWID linked!"),
+        Ok(true) => {
+            println!("✔ Successfully logged in and HWID linked!")
+
+            api.connect_to_websocket().await
+        },
         Ok(false) => eprintln!("⚠ Login succeeded but HWID linking returned failure status."),
         Err(err) => eprintln!("❌ Login failed: {}", err),
     }
