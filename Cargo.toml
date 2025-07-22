@@ -1,6 +1,6 @@
 [package]
 name = "license-api"
-version = "0.2.8"
+version = "0.2.9"
 edition = "2024"
 license = "MIT"
 description = "License API connector written in Rust"
@@ -13,3 +13,5 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 machineid-rs = "1.2.4"
 log = "0.4.27"
+tokio = { version = "1.46.1", features = ["time", "io-std"] }
+tokio-websockets = { version = "0.12.0", features = ["client"] }
