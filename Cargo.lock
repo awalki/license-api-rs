@@ -761,7 +761,6 @@ name = "license-api"
 version = "0.2.9"
 dependencies = [
  "async-trait",
- "fastrand",
  "log",
  "machineid-rs",
  "reqwest",
@@ -1477,6 +1476,7 @@ checksum = "3f29ba084eb43becc9864ba514b4a64f5f65b82f9a6ffbafa5436c1c80605f03"
 dependencies = [
  "base64",
  "bytes",
+ "fastrand",
  "futures-core",
  "futures-sink",
  "http",
