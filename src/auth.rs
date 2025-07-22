@@ -1,7 +1,10 @@
-use tokio_websockets::{ClientBuilder, Error, Message, ServerBuilder};
+use std::process;
+use std::str::FromStr;
+use futures_util::SinkExt;
+use tokio_websockets::{ClientBuilder, Message};
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use tokio::io::AsyncWriteExt;
+use http::Uri;
 use std::error::Error;
 use tokio::time::Duration;
 use tokio::time::sleep;
@@ -60,9 +63,10 @@ impl LicenseAPI {
             .trim_end_matches('/')
             .replace("http://", "ws://")
             .replace("https://", "wss://");
-        let url = format!("{}/ws/notify?token={}", base_ws, self.token);
+        let url_str = format!("{}/ws/notify?token={}", base_ws, self.token);
+        let uri = Uri::from_str(&url_str)?;
 
-        let (mut client, _) = ClientBuilder::from_uri(url).connect().await?;
+        let (mut client, _) = ClientBuilder::from_uri(uri).connect().await?;
 
         loop {
             sleep(Duration::from_secs(30)).await;
