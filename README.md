@@ -18,7 +18,7 @@ use license_api::auth::LicenseAPI;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let api = LicenseAPI::new("http://localhost:8080");
+    let mut api = LicenseAPI::new("http://localhost:8080");
 
     let hwid = get_hwid().await;
 
