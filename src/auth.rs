@@ -1,13 +1,13 @@
-use std::process;
-use std::str::FromStr;
 use futures_util::SinkExt;
-use tokio_websockets::{ClientBuilder, Message};
+use http::Uri;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use http::Uri;
 use std::error::Error;
+use std::process;
+use std::str::FromStr;
 use tokio::time::Duration;
 use tokio::time::sleep;
+use tokio_websockets::{ClientBuilder, Message};
 
 #[derive(Serialize, Deserialize)]
 pub struct LoginRequest {
@@ -68,13 +68,17 @@ impl LicenseAPI {
 
         let (mut client, _) = ClientBuilder::from_uri(uri).connect().await?;
 
-        loop {
-            sleep(Duration::from_secs(30)).await;
+        tokio::spawn(async move {
+            loop {
+                sleep(Duration::from_secs(30)).await;
 
-            if let Err(e) = client.send(Message::ping(Vec::new())).await {
-                eprintln!("Ping failed: {}. Exiting.", e);
-                process::exit(1);
+                if let Err(_e) = client.send(Message::ping(Vec::new())).await {
+                    eprintln!("Check your internet connection: Exiting...");
+                    process::exit(1);
+                }
             }
-        }
+        });
+
+        Ok(())
     }
 }
