@@ -1,6 +1,6 @@
 # license-api-rs
 
-License API connector written in Rust
+License API client library made with Rust
 
 ## Installation
 
@@ -20,30 +20,18 @@ use license_api::auth::LicenseAPI;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut api = LicenseAPI::new("http://localhost:8080");
 
-    let hwid = get_hwid().await;
-
-    let username = Text::new("Enter your username:")
-        .prompt()
-        .expect("Failed to read username");
-    let password = Password::new("Enter your password:")
-        .without_confirmation()
-        .prompt()
-        .expect("Failed to read password");
+    let hwid = get_hwid(true, "anything");
+    let key = String::from("your-license-key");
 
     let creds = LoginRequest {
-        username,
-        password,
+        key,
         hwid,
     };
 
-    match api.login(&creds).await {
-        Ok(true) => {
-            println!("✔ Successfully logged in and HWID linked!")
-
-            api.connect_to_websocket().await
-        },
-        Ok(false) => eprintln!("⚠ Login succeeded but HWID linking returned failure status."),
-        Err(err) => eprintln!("❌ Login failed: {}", err),
+    if let Ok(true) = api.login(&creds).await {
+        println!("✔ Successfully logged in and HWID linked!");
+    } else {
+        println!("❌ Failed to login");
     }
 
     Ok(())
